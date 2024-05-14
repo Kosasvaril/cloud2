@@ -26,7 +26,7 @@ public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
 
 		if(rawPath.equals("/hello")){
 			resultMap.put("statusCode", 200);
-			resultMap.put("body", "{'statusCode': "+200+", 'message': 'Hello from Lambda'}");
+			resultMap.put("body", "{\"statusCode\": "+200+", \"message\": \"Hello from Lambda\"}");
 			return resultMap;
 		}
 		resultMap.put("statusCode", 400);
