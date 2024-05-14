@@ -20,18 +20,16 @@ public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
 	public Map<String, Object> handleRequest(Object request, Context context) {
 		Map<String, Object> event = (Map<String, Object>) request;
 		String rawPath = (String) event.get("rawPath");
+		Map<String, Object> requestContext = (Map<String, Object>) event.get("requestContext");
+		Map<String, Object> http = (Map<String, Object>) requestContext.get("http");
 		Map<String, Object> resultMap = new HashMap<>();
 
 		if(rawPath.equals("/hello")){
-			resultMap.put("statusCode", 200);
-			resultMap.put("body", "{\"message\": \"Hello from Lambda\" }");
+			resultMap.put("body", "{\"statusCode\":200, \"message\": \"Hello from Lambda\"}");
 			return resultMap;
 		}
-		Map<String, Object> requestContext = (Map<String, Object>) event.get("requestContext");
-		Map<String, Object> http = (Map<String, Object>) requestContext.get("http");
-		resultMap.put("statusCode", 400);
 		resultMap.put("body",
-				"{ \"message\": \"Bad request syntax or unsupported method. Request path: {"+rawPath+"}. HTTP method: {"+http.get("method")+"}\" }");
+				"{\"statusCode\":400, \"message\": \"Bad request syntax or unsupported method. Request path:"+rawPath+". HTTP method: "+http.get("method")+"\"}");
 		return resultMap;
 	}
 }
