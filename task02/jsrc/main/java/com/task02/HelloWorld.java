@@ -25,11 +25,12 @@ public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
 		Map<String, Object> resultMap = new HashMap<>();
 
 		if(rawPath.equals("/hello")){
-			resultMap.put("body", "{\"statusCode\":200, \"message\": \"Hello from Lambda\"}");
+			resultMap.put("statusCode", 200);
+			resultMap.put("body", "{'statusCode': "+200+", 'message': 'Hello from Lambda'}");
 			return resultMap;
 		}
-		resultMap.put("body",
-				"{\"statusCode\":400, \"message\": \"Bad request syntax or unsupported method. Request path:"+rawPath+". HTTP method: "+http.get("method")+"\"}");
+		resultMap.put("statusCode", 400);
+		resultMap.put("body", "{'statusCode': "+400+", 'message': 'Bad request syntax or unsupported method. Request path: "+rawPath+". HTTP method: "+http.get("method")+"'}");
 		return resultMap;
 	}
 }
