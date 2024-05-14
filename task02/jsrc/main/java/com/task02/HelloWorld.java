@@ -30,7 +30,7 @@ public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
 			return resultMap;
 		}
 		resultMap.put("statusCode", 400);
-		resultMap.put("body", "{'statusCode': "+400+", 'message': 'Bad request syntax or unsupported method. Request path: "+rawPath+". HTTP method: "+http.get("method")+"'}");
+		resultMap.put("body", "{\"statusCode\": "+400+", \"message\": \"Bad request syntax or unsupported method. Request path: "+rawPath+". HTTP method: "+http.get("method")+"\"}");
 		return resultMap;
 	}
 }
