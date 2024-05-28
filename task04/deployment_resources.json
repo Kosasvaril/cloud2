@@ -60,7 +60,8 @@
   "async_queue": {
     "resource_type": "sqs_queue",
     "fifo_queue": false,
-    "visibility_timeout": 30,
+    "region": "eu-central-1",
+    "visibility_timeout": 300,
     "delay_seconds": 0,
     "maximum_message_size": 1024,
     "message_retention_period": 60,
@@ -68,17 +69,14 @@
     "policy": {},
     "redrive_policy": {},
     "content_based_deduplication": false,
-    "dependencies": [{
+    "dependecies": [{
       "resource_name": "sqs_handler-role",
       "resource_type": "iam_role"
     }]
   },
   "lambda_topic": {
     "resource_type": "sns_topic",
-    "event_sources": [],
-    "dependencies": [{
-      "resource_name": "sns_handler-role",
-      "resource_type": "iam_role"
-    }]
+    "region": "eu-central-1",
+    "event_sources": []
   }
 }
