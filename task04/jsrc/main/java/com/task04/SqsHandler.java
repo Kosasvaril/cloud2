@@ -24,7 +24,9 @@ public class SqsHandler implements RequestHandler<SQSEvent, Void>{
 	public Void handleRequest(SQSEvent event, Context context)
 	{
 		for(SQSEvent.SQSMessage msg : event.getRecords()){
-			logger.info("Received SQS message: {}", msg.getBody());
+			String message = "Received SQS message: " + msg.getBody();
+			logger.info(message);
+			System.out.println(message);
 		}
 		return null;
 	}

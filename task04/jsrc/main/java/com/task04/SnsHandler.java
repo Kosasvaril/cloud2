@@ -25,11 +25,9 @@ public class SnsHandler implements RequestHandler<SNSEvent, String> {
 	public String handleRequest(SNSEvent event, Context context) {
 		// Iterate over each record in the SNS event
 		for (SNSEvent.SNSRecord record : event.getRecords()) {
-			// Get the SNS message body
-			String message = record.getSNS().getMessage();
-
-			// Log the message body to CloudWatch
-			logger.info("Received SNS message: {}", message);
+			String message = "Received SNS message: " + record.getSNS().getMessage();
+			logger.info(message);
+			System.out.println(message);
 		}
 		return "Successfully processed SNS messages";
 	}
