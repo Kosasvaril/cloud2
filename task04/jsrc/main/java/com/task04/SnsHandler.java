@@ -12,8 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 @LambdaHandler(lambdaName = "sns_handler",
 	roleName = "sns_handler-role",
-	isPublishVersion = true,
-	aliasName = "${lambdas_alias_name}",
+	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @SnsEvents(@SnsEventSource(targetTopic = "lambda_topic"))
