@@ -10,6 +10,8 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
+import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.model.RetentionSetting;
 
@@ -22,13 +24,14 @@ import java.util.UUID;
 	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
+@EnvironmentVariables(@EnvironmentVariable(key="name", value="${target_table}"))
 public class ApiHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
 	private AmazonDynamoDB amazonDynamoDB;
 	private DynamoDB dynamoDB;
 	private Table table;
 
-	private String DYNAMODB_TABLE_NAME = "Events";
+	private String DYNAMODB_TABLE_NAME = System.getenv("name");
 	private final Regions REGION = Regions.EU_CENTRAL_1;
 
 	@Override
