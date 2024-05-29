@@ -41,7 +41,8 @@
         "enable_cors": false,
         "POST": {
           "authorization_type": "NONE",
-          "integration_type": "mock",
+          "lambda_name": "api_handler",
+          "integration_type": "lambda",
           "api_key_required": false,
           "method_request_parameters": {},
           "integration_request_body_template": {},
