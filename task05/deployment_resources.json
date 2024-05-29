@@ -37,7 +37,7 @@
     "deploy_stage": "api",
     "dependencies": [],
     "resources": {
-      "events": {
+      "/events": {
         "enable_cors": false,
         "POST": {
           "authorization_type": "NONE",
