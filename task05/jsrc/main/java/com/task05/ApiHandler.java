@@ -48,7 +48,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 
 		Item item = new Item()
 				.withPrimaryKey("id", id)
-				.withNumber("principalId",principalId )
+				.withNumber("principalId",principalId)
 				.withString("createdAt", createdAt)
 				.withMap("body", content);
 
