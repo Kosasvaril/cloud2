@@ -14,7 +14,6 @@ import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.model.RetentionSetting;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,29 +22,32 @@ import java.util.UUID;
 	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
-public class ApiHandler implements RequestHandler<BasicRequest, Map<String, Object>> {
+public class ApiHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
 	private AmazonDynamoDB amazonDynamoDB;
 	private DynamoDB dynamoDB;
 	private Table table;
 
 	private String DYNAMODB_TABLE_NAME = "Events";
-	private Regions REGION = Regions.EU_CENTRAL_1;
+	private final Regions REGION = Regions.EU_CENTRAL_1;
 
 	@Override
-	public Map<String, Object> handleRequest(BasicRequest input, Context context) {
+	public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
 		this.initDynamoDbClient();
 		return persistData(input);
 	}
 
-	private Map<String, Object> persistData(BasicRequest basicRequest) throws ConditionalCheckFailedException {
+	private Map<String, Object> persistData(Map<String, Object> input) throws ConditionalCheckFailedException {
 		String id = UUID.randomUUID().toString();
 		String createdAt = Instant.now().toString();
+		int principalId = (Integer) input.get("principalId");
+		Map<String, Object> content = (Map<String, Object>) input.get("content");
+
 		Item item = new Item()
 				.withPrimaryKey("id", id)
-				.withNumber("principalId", basicRequest.getPrincipalId())
+				.withNumber("principalId",principalId )
 				.withString("createdAt", createdAt)
-				.withMap("body", basicRequest.getContent());
+				.withMap("body", content);
 
 		this.table.putItem(item);
 
@@ -53,9 +55,9 @@ public class ApiHandler implements RequestHandler<BasicRequest, Map<String, Obje
 				"statusCode", 201,
 				"event", Map.of(
 						"id", id,
-						"principalId", basicRequest.getPrincipalId(),
+						"principalId", principalId,
 						"createdAt", createdAt,
-						"body", basicRequest.getContent()
+						"body", content
 				)
 		);
 	}
