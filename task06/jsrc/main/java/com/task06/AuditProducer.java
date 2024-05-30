@@ -30,7 +30,7 @@ import java.util.UUID;
 )
 @EnvironmentVariables(@EnvironmentVariable(key="name", value="${target_table}"))
 @DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 100)
-public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
+public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, Object>> {
 
 	private AmazonDynamoDB amazonDynamoDB;
 	private DynamoDB dynamoDB;
@@ -39,9 +39,9 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 	private static final String DYNAMODB_TABLE_NAME = System.getenv("name");
 	private final Regions REGION = Regions.EU_CENTRAL_1;
 
-	public Void handleRequest(DynamodbEvent event, Context context) {
+	public Map<String, Object> handleRequest(DynamodbEvent event, Context context) {
 		initDynamoDbClient();
-		for (DynamodbEvent.DynamodbStreamRecord record : event.getRecords()) {
+		/*for (DynamodbEvent.DynamodbStreamRecord record : event.getRecords()) {
 			if ("MODIFY".equals(record.getEventName())) {
 				Map<String, AttributeValue> oldImage = record.getDynamodb().getOldImage();
 				Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
@@ -59,7 +59,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 					this.table.putItem(item);
 				}
 			}
-		}
+		}*/
 		return null;
 	}
 
