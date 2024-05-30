@@ -49,9 +49,5 @@
     "write_capacity": 1,
     "global_indexes": [],
     "autoscaling": []
-  },
-  "audit_stream": {
-    "resource_type": "kinesis_stream",
-    "shard_count": 1
   }
 }
