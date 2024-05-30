@@ -12,8 +12,7 @@ import java.util.Map;
 
 @LambdaHandler(lambdaName = "audit_producer",
 	roleName = "audit_producer-role",
-	isPublishVersion = true,
-	aliasName = "${lambdas_alias_name}",
+	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 10)

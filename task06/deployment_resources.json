@@ -15,14 +15,10 @@
             "ssm:PutParameter",
             "ssm:GetParameter",
             "kms:Decrypt",
-            "kinesis:GetRecords",
-            "kinesis:GetShardIterator",
-            "kinesis:DescribeStream",
-            "kinesis:ListStreams",
             "dynamodb:GetRecords",
             "dynamodb:GetShardIterator",
             "dynamodb:DescribeStream",
-           " dynamodb:ListStreams"
+            "dynamodb:ListStreams"
           ],
           "Effect": "Allow",
           "Resource": "*"
