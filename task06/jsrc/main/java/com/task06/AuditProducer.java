@@ -29,7 +29,7 @@ import java.util.UUID;
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @EnvironmentVariables(@EnvironmentVariable(key="name", value="${target_table}"))
-@DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 100)
+@DynamoDbTriggerEventSource(targetTable = "cmtr-36c98d8d-Configuration", batchSize = 100)
 public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 
 	private AmazonDynamoDB amazonDynamoDB;
