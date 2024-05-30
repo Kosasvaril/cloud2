@@ -12,13 +12,17 @@
             "dynamodb:PutItem",
             "dynamodb:Batch*",
             "dynamodb:DeleteItem",
+            "ssm:PutParameter",
+            "ssm:GetParameter",
+            "kms:Decrypt",
+            "kinesis:GetRecords",
+            "kinesis:GetShardIterator",
+            "kinesis:DescribeStream",
+            "kinesis:ListStreams",
             "dynamodb:GetRecords",
             "dynamodb:GetShardIterator",
             "dynamodb:DescribeStream",
-            "dynamodb:ListStreams",
-            "ssm:PutParameter",
-            "ssm:GetParameter",
-            "kms:Decrypt"
+           " dynamodb:ListStreams"
           ],
           "Effect": "Allow",
           "Resource": "*"
