@@ -30,9 +30,9 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 	private AmazonDynamoDB amazonDynamoDB;
 	private DynamoDB dynamoDB;
 	private Table table;
+	private final Regions REGION = Regions.EU_CENTRAL_1;
 
 	private String DYNAMODB_TABLE_NAME = System.getenv("name");
-	private final Regions REGION = Regions.EU_CENTRAL_1;
 
 	@Override
 	public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {

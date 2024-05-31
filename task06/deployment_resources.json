@@ -1,5 +1,5 @@
 {
-  "lambda-basic-execution": {
+  "lambda-stream-execution": {
     "policy_content": {
       "Statement": [
         {
@@ -32,7 +32,7 @@
     "predefined_policies": [],
     "principal_service": "lambda",
     "custom_policies": [
-      "lambda-basic-execution"
+      "lambda-stream-execution"
     ],
     "resource_type": "iam_role"
   },
