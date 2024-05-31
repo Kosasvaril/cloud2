@@ -6,7 +6,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
@@ -15,8 +14,6 @@ import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.events.DynamoDbTriggerEventSource;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
-import com.syndicate.deployment.annotations.resources.DependsOn;
-import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
 
 import java.time.Instant;
@@ -40,16 +37,22 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 	private AmazonDynamoDB amazonDynamoDB;
 	private DynamoDB dynamoDB;
 	private Table table;
+
+	private AmazonDynamoDB amazonDynamoDBAudit;
+	private DynamoDB dynamoDBAudit;
+	private Table tableAudit;
+
 	private final Regions REGION = Regions.EU_CENTRAL_1;
 	private String DYNAMODB_TABLE_NAME = System.getenv("name2");
-	private String DYNAMODB_TABLE_NAME2 = System.getenv("name");
+	private String DYNAMODB_TABLE_NAME_AUDIT = System.getenv("name");
 
 
 	public Map<String, Object> handleRequest(DynamodbEvent event, Context context) {
 
 		for (DynamodbEvent.DynamodbStreamRecord record : event.getRecords()) {
 			if ("INSERT".equals(record.getEventName())) {
-				initDynamoDbClient(DYNAMODB_TABLE_NAME);
+				initDynamoDbClient();
+				initDynamoDbClientAudit();
 				Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
 
 				Item confItem = new Item()
@@ -59,20 +62,18 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 				// Save the entry to the first table
 				this.table.putItem(confItem);
 
-				/*Map<String, Object> auditCreationMap = new HashMap<>();
+				Map<String, Object> auditCreationMap = new HashMap<>();
 				auditCreationMap.put("key", newImage.get("key").getS());
-				auditCreationMap.put("value", Integer.parseInt(newImage.get("value").getN()))
+				auditCreationMap.put("value", Integer.parseInt(newImage.get("value").getN()));
 
 				Item auditItem = new Item()
 						.withPrimaryKey("id", UUID.randomUUID().toString())
 						.withString("itemKey", newImage.get("key").getS())
 						.withString("modificationTime", Instant.now().toString())
 						.withMap("newValue", auditCreationMap);
-				initDynamoDbClient(DYNAMODB_TABLE_NAME2);
-				this.table.putItem(auditItem);*/
+
+				this.tableAudit.putItem(auditItem);
 			}
-
-
 			System.out.println(record);
 		}
 		Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -81,11 +82,18 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 		return resultMap;
 	}
 
-	private void initDynamoDbClient(String tableName) {
+	private void initDynamoDbClient() {
 		this.amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
 				.withRegion(REGION)
 				.build();
 		this.dynamoDB = new DynamoDB(amazonDynamoDB);
-		this.table = dynamoDB.getTable(tableName);
+		this.table = dynamoDB.getTable(DYNAMODB_TABLE_NAME);
+	}
+	private void initDynamoDbClientAudit() {
+		this.amazonDynamoDBAudit = AmazonDynamoDBClientBuilder.standard()
+				.withRegion(REGION)
+				.build();
+		this.dynamoDBAudit = new DynamoDB(amazonDynamoDBAudit);
+		this.tableAudit = dynamoDBAudit.getTable(DYNAMODB_TABLE_NAME_AUDIT);
 	}
 }
