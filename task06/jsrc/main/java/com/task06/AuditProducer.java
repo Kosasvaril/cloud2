@@ -43,20 +43,37 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 
 	public Map<String, Object> handleRequest(DynamodbEvent event, Context context) {
 		Map<String, Object> auditCreationMap = new HashMap<>();
-		//LambdaLogger logger = context.getLogger();
+		LambdaLogger logger = context.getLogger();
 		for (DynamodbEvent.DynamodbStreamRecord r : event.getRecords()) {
+			initDynamoDbClientAudit();
+			logger.log("Record form event: "+gson.toJson(r));
 			if ("INSERT".equals(r.getEventName())) {
-				initDynamoDbClientAudit();
 				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
 				auditCreationMap = new HashMap<>();
 				auditCreationMap.put("key", newImage.get("key").getS());
 				auditCreationMap.put("value", Integer.parseInt(newImage.get("value").getN()));
-				Item auditItem = new Item()
+				Item auditInsertItem = new Item()
 						.withPrimaryKey("id", UUID.randomUUID().toString())
 						.withString("itemKey", newImage.get("key").getS())
 						.withString("modificationTime", Instant.now().toString())
 						.withMap("newValue", auditCreationMap);
-				this.tableAudit.putItem(auditItem);
+				this.tableAudit.putItem(auditInsertItem);
+			}
+			if("MODIFY".equals(r.getEventName())){
+				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
+				Map<String, AttributeValue> oldImage = r.getDynamodb().getOldImage();
+
+				// Create a new entry for the Audit table
+				Item auditModifyItem = new Item()
+						.withPrimaryKey("id", UUID.randomUUID().toString())
+						.withString("itemKey", newImage.get("key").getS())
+						.withString("modificationTime", Instant.now().toString())
+						.withString("updatedAttribute", "value")
+						.withNumber("oldValue", Integer.parseInt(oldImage.get("value").getN()))
+						.withNumber("newValue", Integer.parseInt(newImage.get("value").getN()));
+
+				// Put the item into the table
+				this.tableAudit.putItem(auditModifyItem);
 			}
 		}
         return auditCreationMap;
