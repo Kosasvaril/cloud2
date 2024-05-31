@@ -61,6 +61,8 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withNumber("value", Integer.parseInt(newImage.get("value").getN()));
 
 				// Save the entry to the first table
+				System.out.println(confItem);
+				System.out.println(this.table);
 				this.table.putItem(confItem);
 
 				Map<String, Object> auditCreationMap = new HashMap<>();
@@ -72,7 +74,8 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withString("itemKey", newImage.get("key").getS())
 						.withString("modificationTime", Instant.now().toString())
 						.withMap("newValue", auditCreationMap);
-
+				System.out.println(auditItem);
+				System.out.println(this.tableAudit);
 				this.tableAudit.putItem(auditItem);
 			}
 			System.out.println(r);
