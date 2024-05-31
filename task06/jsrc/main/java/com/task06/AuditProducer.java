@@ -32,20 +32,18 @@ import java.util.UUID;
 @DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 10)
 @EnvironmentVariables(@EnvironmentVariable(key="name", value="${target_table}"))
 public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, Object>> {
-	private AmazonDynamoDB amazonDynamoDBAudit;
-	private DynamoDB dynamoDBAudit;
-	private Table tableAudit;
+    private Table tableAudit;
 
-	private final Regions REGION = Regions.EU_CENTRAL_1;
-	private String DYNAMODB_TABLE_NAME_AUDIT = System.getenv("name");
+	private static final Regions REGION = Regions.EU_CENTRAL_1;
+	private static final String DYNAMODB_TABLE_NAME_AUDIT = System.getenv("name");
 	Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
 	public Map<String, Object> handleRequest(DynamodbEvent event, Context context) {
+		initDynamoDbClientAudit();
 		Map<String, Object> auditCreationMap = new HashMap<>();
 		LambdaLogger logger = context.getLogger();
 		for (DynamodbEvent.DynamodbStreamRecord r : event.getRecords()) {
-			initDynamoDbClientAudit();
 			logger.log("Record form event: "+gson.toJson(r));
 			if ("INSERT".equals(r.getEventName())) {
 				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
@@ -80,10 +78,10 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
     }
 
 	private void initDynamoDbClientAudit() {
-		this.amazonDynamoDBAudit = AmazonDynamoDBClientBuilder.standard()
-				.withRegion(REGION)
-				.build();
-		this.dynamoDBAudit = new DynamoDB(amazonDynamoDBAudit);
+        AmazonDynamoDB amazonDynamoDBAudit = AmazonDynamoDBClientBuilder.standard()
+                .withRegion(REGION)
+                .build();
+        DynamoDB dynamoDBAudit = new DynamoDB(amazonDynamoDBAudit);
 		this.tableAudit = dynamoDBAudit.getTable(DYNAMODB_TABLE_NAME_AUDIT);
 	}
 }
