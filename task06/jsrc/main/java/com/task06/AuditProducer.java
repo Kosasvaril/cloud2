@@ -31,14 +31,14 @@ import java.util.UUID;
 )
 @DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 10)
 @EnvironmentVariables(@EnvironmentVariable(key="name", value="${target_table}"))
-public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
+public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, Object>> {
     private Table tableAudit;
 	private static final Regions REGION = Regions.EU_CENTRAL_1;
 	private static final String DYNAMODB_TABLE_NAME_AUDIT = System.getenv("name");
 	Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
-	public Void handleRequest(DynamodbEvent event, Context context) {
+	public Map<String, Object> handleRequest(DynamodbEvent event, Context context) {
 		initDynamoDbClientAudit();
 		LambdaLogger logger = context.getLogger();
 		logger.log("Record from event: "+gson.toJson(event));
