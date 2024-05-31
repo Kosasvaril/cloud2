@@ -43,10 +43,9 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 		initDynamoDbClientAudit();
 		LambdaLogger logger = context.getLogger();
 		logger.log("Record from event: "+gson.toJson(event));
-
-		/*for (DynamodbEvent.DynamodbStreamRecord r : event.getRecords()) {
-			logger.log("Record from event: "+gson.toJson(r));
+		for (DynamodbEvent.DynamodbStreamRecord r : event.getRecords()) {
 			if ("INSERT".equals(r.getEventName())) {
+
 				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
 				Map<String, Object> auditCreationMap = new HashMap<>();
 				auditCreationMap.put("key", newImage.get("key").getS());
@@ -57,6 +56,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withString("modificationTime", Instant.now().toString())
 						.withMap("newValue", auditCreationMap);
 				this.tableAudit.putItem(auditInsertItem);
+
 			}else if("MODIFY".equals(r.getEventName())){
 				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
 				Map<String, AttributeValue> oldImage = r.getDynamodb().getOldImage();
@@ -73,7 +73,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 				// Put the item into the table
 				this.tableAudit.putItem(auditModifyItem);
 			}
-		}*/
+		}
         return Collections.emptyMap();
     }
 
