@@ -78,12 +78,9 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 				System.out.println(this.tableAudit);
 				this.tableAudit.putItem(auditItem);
 			}
-			System.out.println(r);
+			System.out.println("'"+r.getEventName()+"'");
 		}
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap.put("statusCode", 200);
-		resultMap.put("body", "Hello from Lambda");
-		return resultMap;
+		return null;
 	}
 
 	private void initDynamoDbClient() {
