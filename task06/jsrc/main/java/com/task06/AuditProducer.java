@@ -44,7 +44,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 		Map<String, Object> auditCreationMap = new HashMap<>();
 		LambdaLogger logger = context.getLogger();
 		for (DynamodbEvent.DynamodbStreamRecord r : event.getRecords()) {
-			logger.log("Record form event: "+gson.toJson(r));
+			logger.log("Record from event: "+gson.toJson(r));
 			if ("INSERT".equals(r.getEventName())) {
 				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
 				auditCreationMap = new HashMap<>();
@@ -56,8 +56,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withString("modificationTime", Instant.now().toString())
 						.withMap("newValue", auditCreationMap);
 				this.tableAudit.putItem(auditInsertItem);
-			}
-			if("MODIFY".equals(r.getEventName())){
+			}else if("MODIFY".equals(r.getEventName())){
 				/*Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
 				Map<String, AttributeValue> oldImage = r.getDynamodb().getOldImage();
 
