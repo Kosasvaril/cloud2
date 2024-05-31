@@ -56,8 +56,8 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withString("modificationTime", Instant.now().toString())
 						.withMap("newValue", auditCreationMap);
 				this.tableAudit.putItem(auditInsertItem);
-			}else if("MODIFY".equals(r.getEventName())){
-				/*Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
+			}/*else if("MODIFY".equals(r.getEventName())){
+				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
 				Map<String, AttributeValue> oldImage = r.getDynamodb().getOldImage();
 
 				// Create a new entry for the Audit table
@@ -70,8 +70,8 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withNumber("newValue", Integer.parseInt(newImage.get("value").getN()));
 
 				// Put the item into the table
-				this.tableAudit.putItem(auditModifyItem);*/
-			}
+				this.tableAudit.putItem(auditModifyItem);
+			}*/
 		}
         return auditCreationMap;
     }
