@@ -20,6 +20,7 @@ import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.model.RetentionSetting;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -73,7 +74,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 				this.tableAudit.putItem(auditModifyItem);
 			}
 		}*/
-        return null;
+        return Collections.emptyMap();
     }
 
 	private void initDynamoDbClientAudit() {
