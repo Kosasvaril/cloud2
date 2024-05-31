@@ -49,6 +49,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 
 		for (DynamodbEvent.DynamodbStreamRecord record : event.getRecords()) {
 			if ("INSERT".equals(record.getEventName())) {
+				initDynamoDbClient(DYNAMODB_TABLE_NAME);
 				Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
 
 				Item confItem = new Item()
@@ -56,10 +57,9 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withNumber("value", Integer.parseInt(newImage.get("value").getN()));
 
 				// Save the entry to the first table
-				initDynamoDbClient(DYNAMODB_TABLE_NAME);
 				this.table.putItem(confItem);
 
-				Map<String, Object> auditCreationMap = new HashMap<>();
+				/*Map<String, Object> auditCreationMap = new HashMap<>();
 				auditCreationMap.put("key", newImage.get("key").getS());
 				auditCreationMap.put("value", Integer.parseInt(newImage.get("value").getN()))
 
@@ -69,7 +69,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withString("modificationTime", Instant.now().toString())
 						.withMap("newValue", auditCreationMap);
 				initDynamoDbClient(DYNAMODB_TABLE_NAME2);
-				this.table.putItem(auditItem);
+				this.table.putItem(auditItem);*/
 			}
 
 
