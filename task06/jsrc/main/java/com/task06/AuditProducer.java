@@ -49,11 +49,12 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 
 	public Map<String, Object> handleRequest(DynamodbEvent event, Context context) {
 
-		for (DynamodbEvent.DynamodbStreamRecord record : event.getRecords()) {
-			if ("INSERT".equals(record.getEventName())) {
+		for (DynamodbEvent.DynamodbStreamRecord r : event.getRecords()) {
+			if ("INSERT".equals(r.getEventName())) {
+				System.out.println("TRUE");
 				initDynamoDbClient();
 				initDynamoDbClientAudit();
-				Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
+				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
 
 				Item confItem = new Item()
 						.withPrimaryKey("key", newImage.get("key").getS())
@@ -74,7 +75,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 
 				this.tableAudit.putItem(auditItem);
 			}
-			System.out.println(record);
+			System.out.println(r);
 		}
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap.put("statusCode", 200);
