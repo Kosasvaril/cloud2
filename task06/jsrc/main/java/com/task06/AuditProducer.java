@@ -31,23 +31,23 @@ import java.util.UUID;
 )
 @DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 10)
 @EnvironmentVariables(@EnvironmentVariable(key="name", value="${target_table}"))
-public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, Object>> {
+public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
     private Table tableAudit;
-
 	private static final Regions REGION = Regions.EU_CENTRAL_1;
 	private static final String DYNAMODB_TABLE_NAME_AUDIT = System.getenv("name");
 	Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
-	public Map<String, Object> handleRequest(DynamodbEvent event, Context context) {
+	public Void handleRequest(DynamodbEvent event, Context context) {
 		initDynamoDbClientAudit();
-		Map<String, Object> auditCreationMap = new HashMap<>();
 		LambdaLogger logger = context.getLogger();
-		for (DynamodbEvent.DynamodbStreamRecord r : event.getRecords()) {
+		logger.log("Record from event: "+gson.toJson(event));
+
+		/*for (DynamodbEvent.DynamodbStreamRecord r : event.getRecords()) {
 			logger.log("Record from event: "+gson.toJson(r));
 			if ("INSERT".equals(r.getEventName())) {
 				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
-				auditCreationMap = new HashMap<>();
+				Map<String, Object> auditCreationMap = new HashMap<>();
 				auditCreationMap.put("key", newImage.get("key").getS());
 				auditCreationMap.put("value", Integer.parseInt(newImage.get("value").getN()));
 				Item auditInsertItem = new Item()
@@ -56,7 +56,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withString("modificationTime", Instant.now().toString())
 						.withMap("newValue", auditCreationMap);
 				this.tableAudit.putItem(auditInsertItem);
-			}/*else if("MODIFY".equals(r.getEventName())){
+			}else if("MODIFY".equals(r.getEventName())){
 				Map<String, AttributeValue> newImage = r.getDynamodb().getNewImage();
 				Map<String, AttributeValue> oldImage = r.getDynamodb().getOldImage();
 
@@ -71,9 +71,9 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 
 				// Put the item into the table
 				this.tableAudit.putItem(auditModifyItem);
-			}*/
-		}
-        return auditCreationMap;
+			}
+		}*/
+        return null;
     }
 
 	private void initDynamoDbClientAudit() {
