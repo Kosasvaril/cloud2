@@ -30,7 +30,10 @@ import java.util.UUID;
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @DynamoDbTriggerEventSource(targetTable = "Configuration", batchSize = 10)
-@EnvironmentVariables(@EnvironmentVariable(key="name", value="${target_table}"))
+@EnvironmentVariables({
+		@EnvironmentVariable(key="name2", value="${target_table2}"),
+		@EnvironmentVariable(key="name", value="${target_table}")}
+)
 //@DependsOn(name = "Configuration", resourceType = ResourceType.DYNAMODB_TABLE)
 public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, Object>> {
 
@@ -38,12 +41,38 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 	private DynamoDB dynamoDB;
 	private Table table;
 	private final Regions REGION = Regions.EU_CENTRAL_1;
-	private String DYNAMODB_TABLE_NAME = System.getenv("name");
+	private String DYNAMODB_TABLE_NAME = System.getenv("name2");
+	private String DYNAMODB_TABLE_NAME2 = System.getenv("name");
 
 
 	public Map<String, Object> handleRequest(DynamodbEvent event, Context context) {
-		initDynamoDbClient();
+
 		for (DynamodbEvent.DynamodbStreamRecord record : event.getRecords()) {
+			if ("INSERT".equals(record.getEventName())) {
+				Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
+
+				Item confItem = new Item()
+						.withPrimaryKey("key", newImage.get("key").getS())
+						.withNumber("value", Integer.parseInt(newImage.get("value").getN()));
+
+				// Save the entry to the first table
+				initDynamoDbClient(DYNAMODB_TABLE_NAME);
+				this.table.putItem(confItem);
+
+				Map<String, Object> auditCreationMap = new HashMap<>();
+				auditCreationMap.put("key", newImage.get("key").getS());
+				auditCreationMap.put("value", Integer.parseInt(newImage.get("value").getN()))
+
+				Item auditItem = new Item()
+						.withPrimaryKey("id", UUID.randomUUID().toString())
+						.withString("itemKey", newImage.get("key").getS())
+						.withString("modificationTime", Instant.now().toString())
+						.withMap("newValue", auditCreationMap);
+				initDynamoDbClient(DYNAMODB_TABLE_NAME2);
+				this.table.putItem(auditItem);
+			}
+
+
 			System.out.println(record);
 		}
 		Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -52,11 +81,11 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 		return resultMap;
 	}
 
-	private void initDynamoDbClient() {
+	private void initDynamoDbClient(String tableName) {
 		this.amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
 				.withRegion(REGION)
 				.build();
 		this.dynamoDB = new DynamoDB(amazonDynamoDB);
-		this.table = dynamoDB.getTable(DYNAMODB_TABLE_NAME);
+		this.table = dynamoDB.getTable(tableName);
 	}
 }
