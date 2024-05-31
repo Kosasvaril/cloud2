@@ -55,6 +55,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Map<String, 
 						.withString("itemKey", newImage.get("key").getS())
 						.withString("modificationTime", Instant.now().toString())
 						.withMap("newValue", auditCreationMap);
+
 				this.tableAudit.putItem(auditInsertItem);
 
 			}else if("MODIFY".equals(r.getEventName())){
